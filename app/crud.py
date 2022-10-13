@@ -100,3 +100,17 @@ def update_attendance(db: Session, telegram_id: int, festival: schemas.FestivalA
     db.refresh(db_festival_attendee)
 
     return db_festival_attendee
+
+
+def get_festival_attendees(db: Session, festival_id: int):
+    return db.query(
+        models.User
+    ).join(
+        models.FestivalAttendee
+    ).filter(
+        models.User.telegram_id == models.FestivalAttendee.user_id
+    ).join(
+        models.Festival
+    ).filter(
+        models.Festival.id == festival_id
+    ).all()
