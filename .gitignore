@@ -1,0 +1,7 @@
+.idea
+*.iml
+venv
+__pycache__
+*/__pycache__
+*.rgz
+*.db

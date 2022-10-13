@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  replicas: {{ .Values.deployment.replicas }}
+  strategy: {{ .Values.deployment.updateStrategy }}
+  selector:
+    matchLabels:
+      {{- range $k, $v := .Values.deployment.labels }}
+      {{ $k }}: {{ $v }}
+      {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- range $k, $v := .Values.deployment.labels }}
+        {{ $k }}: {{ $v }}
+        {{- end }}
+    spec:
+      initContainers:
+        - name: {{ .Values.deployment.initContainer.name }}
+          image: {{ .Values.deployment.initContainer.image }}
+          command: {{ .Values.deployment.initContainer.command }}
+          volumeMounts:
+            - mountPath: {{ .Values.volume.path }}
+              name: {{ .Values.volume.name }}
+      containers:
+      - name: {{ .Values.deployment.name }}
+        image: {{ .Values.deployment.image }}
+        imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+        ports:
+        {{- range $port := .Values.deployment.ports }}
+        - containerPort: {{ $port }}
+          protocol: TCP
+        {{- end }}
+        env:
+          - name: SQLALCHEMY_URL
+            value: {{ .Values.deployment.env.sqlalchemy_url }}
+        resources:
+          requests:
+            cpu: {{ .Values.deployment.requests.cpu }}
+            memory: {{ .Values.deployment.requests.memory }}
+          limits:
+            cpu: {{ .Values.deployment.limit.cpu }}
+            memory: {{ .Values.deployment.limit.memory }}
+        volumeMounts:
+          - mountPath: {{ .Values.volume.path }}
+            name: {{ .Values.volume.name }}
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.claim.name }}

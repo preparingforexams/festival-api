@@ -1,0 +1,40 @@
+namespace: festival
+
+deployment:
+  name: festival-api
+  image: ghcr.io/preparingforexams/festival-api:__TAG__
+  imagePullPolicy: Always
+  revisionHistoryLimit: 1
+  replicas: 1
+  updateStrategy: Recreate
+  labels:
+    app: festival-api
+  initContainer:
+    name: alembic-migration-head
+    image: ghcr.io/preparingforexams/festival-api:__TAG__
+    command: alembic upgrade head
+  ports:
+    - 5000
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limit:
+    cpu: 300m
+    memory: 300Mi
+  env:
+    sqlalchemy_url: sqlite:///data/sqlite.db
+
+service:
+  name: festival-api
+  port: 80
+  targetPort: 5000
+  appSelector: festival-api
+
+volume:
+  name: festival-api-sqlite
+  path: /data
+
+claim:
+  name: festival-api-sqlite
+  size: 1Gi
+  accessMode: ReadWriteOnce
