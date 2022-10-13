@@ -11,7 +11,7 @@ from app import crud, schemas
 # we import Base here so it can be used in alembic/env.py to autogenerate migrations
 from app.database import Base, SessionLocal
 from app.logger import create_logger
-from app.schemas import FestivalAttendeeCreate, FestivalAttendeeUpdate
+from app.schemas import FestivalAttendeeCreate, FestivalAttendeeUpdate, FestivalSearchQuery
 
 app = FastAPI()
 security = HTTPBasic()
@@ -62,6 +62,15 @@ def attend(telegram_id: int, query: FestivalAttendeeUpdate, db: Session = Depend
         raise HTTPException(status_code=400, detail="error attending this festival")
 
     return db_user
+
+
+@app.post("/v1/festival/search", response_model=List[schemas.Festival])
+def search_festivals(query: FestivalSearchQuery, db: Session = Depends(get_db)):
+    festivals = crud.search_festival(db, query)
+    if not festivals:
+        raise HTTPException(status_code=404, detail="no festival matched query")
+
+    return festivals
 
 
 @app.get("/v1/user/", response_model=List[schemas.User])

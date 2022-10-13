@@ -1,6 +1,8 @@
 import enum
+from typing import List
 
 from fastapi import HTTPException
+from fuzzywuzzy import fuzz
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -31,6 +33,18 @@ def create_user(db: Session, user: schemas.UserCreate):
 @log
 def get_festival(db: Session, festival_id: int):
     return db.query(models.Festival).filter(models.Festival.id == festival_id).first()
+
+
+@log
+def search_festival(db: Session, festival_query: schemas.FestivalSearchQuery):
+    festivals = get_festivals(db)
+    results = []
+
+    for festival in festivals:
+        if fuzz.partial_ratio(festival_query.name, festival.name) > 70:
+            results.append(festival)
+
+    return results
 
 
 @log

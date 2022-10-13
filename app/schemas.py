@@ -18,6 +18,10 @@ class FestivalCreate(FestivalBase):
         orm_mode = True
 
 
+class FestivalSearchQuery(BaseModel):
+    name: str
+
+
 class Festival(FestivalBase):
     id: int
     start: datetime
