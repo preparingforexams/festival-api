@@ -18,6 +18,8 @@ deployment:
       - alembic
       - upgrade
       - head
+    env:
+      sqlalchemy_url: sqlite:////data/sqlite.db
   ports:
     - 5000
   requests:
