@@ -41,7 +41,7 @@ def search_festival(db: Session, festival_query: schemas.FestivalSearchQuery):
     results = []
 
     for festival in festivals:
-        if fuzz.partial_ratio(festival_query.name, festival.name) > 70:
+        if fuzz.partial_ratio(festival_query.name, festival.name) > festival_query.score_threshold:
             results.append(festival)
 
     return results
@@ -49,8 +49,6 @@ def search_festival(db: Session, festival_query: schemas.FestivalSearchQuery):
 
 @log
 def get_festival_by_name(db: Session, name: str):
-    # TODO: use fuzzywuzzy for this (current is ILIKE (**))
-    # see https://github.com/preparingforexams/festival-bot/issues/17
     return db.query(models.Festival).filter(models.Festival.name == name).first()
 
 

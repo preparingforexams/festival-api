@@ -20,6 +20,7 @@ class FestivalCreate(FestivalBase):
 
 class FestivalSearchQuery(BaseModel):
     name: str
+    score_threshold: int = 70
 
 
 class Festival(FestivalBase):
