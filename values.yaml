@@ -12,7 +12,7 @@ deployment:
   initContainer:
     name: alembic-migration-head
     image: ghcr.io/preparingforexams/festival-api:__TAG__
-    command: alembic upgrade head
+    command: python -m alembic upgrade head
   ports:
     - 5000
   requests:
