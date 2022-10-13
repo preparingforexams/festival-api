@@ -29,6 +29,9 @@ spec:
             {{- range .Values.deployment.initContainer.args }}
             - {{ . }}
             {{- end }}
+          env:
+            - name: SQLALCHEMY_URL
+              value: {{ .Values.deployment.env.sqlalchemy_url }}
           volumeMounts:
             - mountPath: {{ .Values.volume.path }}
               name: {{ .Values.volume.name }}
