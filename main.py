@@ -86,7 +86,7 @@ def get_festivals(skip: int = 0, limit: int = 20, db: Session = Depends(get_db))
 
 
 @app.get("/v1/festival/{festival_id}", response_model=schemas.Festival)
-def get_festivals(festival_id: int, db: Session = Depends(get_db)):
+def get_festival(festival_id: int, db: Session = Depends(get_db)):
     db_festival = crud.get_festival(db, festival_id)
     if db_festival is None:
         raise HTTPException(status_code=404, detail="festival not found")
@@ -95,7 +95,7 @@ def get_festivals(festival_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/v1/festival/{festival_id}/attendees", response_model=List[schemas.User])
-def get_festivals(festival_id: int, db: Session = Depends(get_db)):
+def get_festival_attendees(festival_id: int, db: Session = Depends(get_db)):
     db_festival = crud.get_festival_attendees(db, festival_id)
     if db_festival is None:
         raise HTTPException(status_code=404, detail="festival not found")
