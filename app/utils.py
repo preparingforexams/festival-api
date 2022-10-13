@@ -24,7 +24,7 @@ def log(function: Callable):
 def parse_date(date_string: str, date_formats: List[str] = None, default_year: int = 2023) -> Optional[datetime]:
     date = None
     if date_formats is None:
-        date_formats = ["%d.%m"]
+        date_formats = ["%d.%m", "%d.%m.%Y"]
 
     for date_format in date_formats:
         try:
