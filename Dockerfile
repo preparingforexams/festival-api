@@ -4,10 +4,11 @@ WORKDIR /usr/src/app
 
 ENV PYTHONUNBUFFERED=1
 
-ADD telegram_bot telegram_bot
+ADD app/ .
+ADD alembic/ .
+ADD alembic.ini .
 ADD main.py .
 ADD requirements.txt .
-ADD setup.py .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
