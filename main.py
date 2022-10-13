@@ -1,10 +1,12 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.openapi.models import Response
 from fastapi.security import HTTPBasic
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_200_OK
 
 from app import crud, schemas
 # noinspection PyUnresolvedReferences
@@ -60,6 +62,8 @@ def attend(telegram_id: int, query: FestivalAttendeeUpdate, db: Session = Depend
     db_user = crud.update_attendance(db, telegram_id, query)
     if db_user is None:
         raise HTTPException(status_code=400, detail="error attending this festival")
+    elif not db_user:
+        raise HTTPException(status_code=200, detail="user attendance has been deleted")
 
     return db_user
 

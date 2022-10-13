@@ -100,6 +100,13 @@ def get_festival_attendee(db: Session, festival_id: int, telegram_id: int):
 def update_attendance(db: Session, telegram_id: int, festival: schemas.FestivalAttendeeUpdate):
     # noinspection PyTypeChecker
     db_festival_attendee = get_festival_attendee(db, festival.festival_id, telegram_id)
+    if not db_festival_attendee:
+        raise HTTPException(status_code=404, detail="user is not attending this festival")
+
+    if festival.status == models.AttendanceStatus.NO:
+        db.delete(db_festival_attendee)
+        db.commit()
+        return False
 
     data = festival.dict(exclude_unset=True)
     for key, value in data.items():
