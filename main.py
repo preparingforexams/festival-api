@@ -28,7 +28,7 @@ def get_db():
 
 
 @app.post("/v1/user/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), credentials=Depends(security)):
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user.telegram_id)
     if db_user:
         raise HTTPException(400, detail="user with this telegram_id already exists")
@@ -37,7 +37,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db), credent
 
 
 @app.post("/v1/festival/", response_model=schemas.Festival)
-def create_festival(festival: schemas.FestivalCreate, db: Session = Depends(get_db), credentials=Depends(security)):
+def create_festival(festival: schemas.FestivalCreate, db: Session = Depends(get_db)):
     db_festival = crud.get_festival_by_name(db, festival.name)
 
     if db_festival:
@@ -47,8 +47,7 @@ def create_festival(festival: schemas.FestivalCreate, db: Session = Depends(get_
 
 
 @app.post("/v1/user/{telegram_id}/attend", response_model=schemas.FestivalAttendee)
-def attend(telegram_id: int, query: FestivalAttendeeCreate, db: Session = Depends(get_db),
-           credentials=Depends(security)):
+def attend(telegram_id: int, query: FestivalAttendeeCreate, db: Session = Depends(get_db)):
     db_user = crud.attend(db, telegram_id, query)
     if db_user is None:
         raise HTTPException(status_code=400, detail="error attending this festival")
@@ -57,8 +56,7 @@ def attend(telegram_id: int, query: FestivalAttendeeCreate, db: Session = Depend
 
 
 @app.patch("/v1/user/{telegram_id}/attend", response_model=schemas.FestivalAttendee)
-def attend(telegram_id: int, query: FestivalAttendeeUpdate, db: Session = Depends(get_db),
-           credentials=Depends(security)):
+def attend(telegram_id: int, query: FestivalAttendeeUpdate, db: Session = Depends(get_db)):
     db_user = crud.update_attendance(db, telegram_id, query)
     if db_user is None:
         raise HTTPException(status_code=400, detail="error attending this festival")
