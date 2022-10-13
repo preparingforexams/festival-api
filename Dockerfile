@@ -4,8 +4,8 @@ WORKDIR /usr/src/app
 
 ENV PYTHONUNBUFFERED=1
 
-ADD app/ .
-ADD alembic/ .
+ADD app app
+ADD alembic alembic
 ADD alembic.ini .
 ADD main.py .
 ADD requirements.txt .

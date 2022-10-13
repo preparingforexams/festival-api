@@ -25,7 +25,10 @@ spec:
           image: {{ .Values.deployment.initContainer.image }}
           command:
             - {{ .Values.deployment.initContainer.command }}
-          args: {{ .Values.deployment.initContainer.args }}
+          args:
+            {{- range .Values.deployment.initContainer.args }}
+            - {{ . }}
+            {{- end }}
           volumeMounts:
             - mountPath: {{ .Values.volume.path }}
               name: {{ .Values.volume.name }}
