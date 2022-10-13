@@ -20,6 +20,7 @@ if config.config_file_name is not None:
 
 sqlalchemy_url = os.getenv("SQLALCHEMY_URL", None)
 if sqlalchemy_url is not None:
+    print(f"set sqlalchemy.url to {sqlalchemy_url}")
     config.set_main_option("sqlalchemy.url", sqlalchemy_url)
 
 
