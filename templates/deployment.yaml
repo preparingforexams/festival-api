@@ -22,7 +22,8 @@ spec:
       initContainers:
         - name: {{ .Values.deployment.initContainer.name }}
           image: {{ .Values.deployment.initContainer.image }}
-          command: {{ .Values.deployment.initContainer.command }}
+          command:
+            - {{ .Values.deployment.initContainer.command }}
           volumeMounts:
             - mountPath: {{ .Values.volume.path }}
               name: {{ .Values.volume.name }}
