@@ -42,6 +42,9 @@ def search_festival(db: Session, festival_query: schemas.FestivalSearchQuery):
 
     for festival in festivals:
         if fuzz.partial_ratio(festival_query.name, festival.name) > festival_query.score_threshold:
+            if fuzz.ratio(festival_query.name, festival.name) == 100:
+                results = [festival]
+                break
             results.append(festival)
 
     return results
