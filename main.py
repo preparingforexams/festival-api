@@ -1,19 +1,18 @@
 import os
-from typing import List, Optional
+from typing import List
 
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.openapi.models import Response
+from fastapi import Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.security import HTTPBasic
 from sqlalchemy.orm import Session
-from starlette.status import HTTP_200_OK
 
 from app import crud, schemas
 # noinspection PyUnresolvedReferences
 # we import Base here so it can be used in alembic/env.py to autogenerate migrations
 from app.database import Base, SessionLocal
 from app.logger import create_logger
-from app.schemas import FestivalAttendeeCreate, FestivalAttendeeUpdate, FestivalSearchQuery
+from app.schemas import FestivalAttendeeCreate, FestivalAttendeeUpdate, FestivalSearchQuery, FestivalAttendee
 
 app = FastAPI()
 security = HTTPBasic()
@@ -98,13 +97,13 @@ def get_festival(festival_id: int, db: Session = Depends(get_db)):
     return db_festival
 
 
-@app.get("/v1/festival/{festival_id}/attendees", response_model=List[schemas.User])
-def get_festival_attendees(festival_id: int, db: Session = Depends(get_db)):
-    db_festival = crud.get_festival_attendees(db, festival_id)
-    if db_festival is None:
-        raise HTTPException(status_code=404, detail="festival not found")
-
-    return db_festival
+# @app.get("/v1/festival/{festival_id}/attendees", response_model=List[schemas.FestivalAttendee])
+# def get_festival_attendees(festival_id: int, db: Session = Depends(get_db)):
+#     db_festival = crud.get_festival_attendees(db, festival_id)
+#     if db_festival is None:
+#         raise HTTPException(status_code=404, detail="festival not found")
+#
+#     return db_festival
 
 
 @app.get("/v1/user/{telegram_id}", response_model=schemas.User)
@@ -114,6 +113,15 @@ def get_user(telegram_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="user not found")
 
     return db_user
+
+
+@app.get("/v1/status/{telegram_id}", response_model=List[FestivalAttendee])
+def get_status(telegram_id: int, db: Session = Depends(get_db)):
+    db_festival = crud.get_festival_attendees(db, telegram_id)
+    if db_festival is None:
+        raise HTTPException(status_code=404, detail="festival not found")
+
+    return db_festival
 
 
 def main():

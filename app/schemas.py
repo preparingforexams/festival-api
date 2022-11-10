@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel
 
+from . import models
 from .models import AttendanceStatus
 
 
@@ -23,6 +23,9 @@ class FestivalSearchQuery(BaseModel):
     score_threshold: int = 70
 
 
+date_format = "%d.%m"
+
+
 class Festival(FestivalBase):
     id: int
     start: datetime
@@ -30,6 +33,22 @@ class Festival(FestivalBase):
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def from_model(cls, model: models.Festival):
+        cls.name = model.name
+        cls.start = model.start
+        cls.end = model.end
+        cls.link = model.link
+        cls.id = model.id
+
+        return cls(
+            id=model.id,
+            name=model.name,
+            start=model.start,
+            end=model.end,
+            link=model.link,
+        )
 
 
 class UserBase(BaseModel):
@@ -42,8 +61,6 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    festivals: List[Festival]
-
     class Config:
         orm_mode = True
 
@@ -64,6 +81,17 @@ class FestivalAttendeeUpdate(FestivalAttendeeBase):
 class FestivalAttendee(FestivalAttendeeBase):
     id: int
     user_id: int
+    festival: Festival
+
+    @classmethod
+    def from_db(cls, attendee: models.FestivalAttendee, festival: models.Festival) -> "FestivalAttendee":
+        return cls(
+            festival_id=festival.id,
+            status=AttendanceStatus(attendee.status),
+            id=attendee.id,
+            user_id=attendee.user_id,
+            festival=Festival.from_model(festival)
+        )
 
     class Config:
         orm_mode = True

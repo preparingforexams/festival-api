@@ -12,8 +12,6 @@ class User(Base):
     telegram_id = Column(Integer, primary_key=True, index=True, nullable=False)
     name = Column(String, nullable=False)
 
-    festivals = relationship("Festival", secondary="festivalattendee")
-
     def __str__(self):
         return self.name
 

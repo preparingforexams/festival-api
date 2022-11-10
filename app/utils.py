@@ -30,7 +30,6 @@ def parse_date(date_string: str, date_formats: List[str] = None, default_year: i
         try:
             date = datetime.strptime(date_string, date_format)
         except ValueError as e:
-            print(e)
             pass
 
     if date:

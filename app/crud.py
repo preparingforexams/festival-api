@@ -1,5 +1,4 @@
 import enum
-from typing import List
 
 from fastapi import HTTPException
 from fuzzywuzzy import fuzz
@@ -7,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .schemas import FestivalAttendee
 from .utils import log, parse_date
 
 
@@ -82,15 +82,14 @@ def attend(db: Session, telegram_id: int, festival: schemas.FestivalAttendeeCrea
     db.add(db_attendance)
     try:
         db.commit()
+        db.refresh(db_attendance)
     except IntegrityError as e:
         error_message = "\n".join(e.args)
         if "UNIQUE constraint failed" in error_message:
             raise HTTPException(status_code=400, detail="user already has an attendance status for this festival")
         return None
 
-    db.refresh(db_attendance)
-
-    return db_attendance
+    return schemas.FestivalAttendee.from_db(db_attendance, get_festival(db, db_attendance.festival_id))
 
 
 @log
@@ -121,18 +120,17 @@ def update_attendance(db: Session, telegram_id: int, festival: schemas.FestivalA
     db.commit()
     db.refresh(db_festival_attendee)
 
-    return db_festival_attendee
+    return schemas.FestivalAttendee.from_db(db_festival_attendee, get_festival(db, db_festival_attendee.festival_id))
 
 
-def get_festival_attendees(db: Session, festival_id: int):
-    return db.query(
-        models.User
-    ).join(
-        models.FestivalAttendee
+@log
+def get_festival_attendees(db: Session, telegram_id: int):
+    res = db.query(
+        models.FestivalAttendee, models.Festival
     ).filter(
-        models.User.telegram_id == models.FestivalAttendee.user_id
-    ).join(
-        models.Festival
+        models.FestivalAttendee.user_id == telegram_id
     ).filter(
-        models.Festival.id == festival_id
+        models.FestivalAttendee.festival_id == models.Festival.id
     ).all()
+
+    return [FestivalAttendee.from_db(attendee, festival) for attendee, festival in res]
