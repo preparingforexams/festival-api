@@ -2,5 +2,5 @@ alembic==1.11.1
 fastapi==0.99.1
 fuzzywuzzy==0.18.0
 pydantic==1.10.11
-sqlalchemy==1.4.48
+sqlalchemy==1.4.49
 uvicorn==0.22.0
