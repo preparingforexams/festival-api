@@ -1,5 +1,5 @@
 alembic==1.11.2
-fastapi==0.103.0
+fastapi==0.103.1
 fuzzywuzzy==0.18.0
 pydantic==1.10.12
 sqlalchemy==1.4.49
